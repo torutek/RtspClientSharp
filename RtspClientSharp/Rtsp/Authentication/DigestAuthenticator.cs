@@ -34,7 +34,7 @@ namespace RtspClientSharp.Rtsp.Authentication
 
             string ha2Argument = method + ":" + uri;
 
-            bool hasQop = !string.IsNullOrEmpty(_qop);
+            bool hasQop = false;// !string.IsNullOrEmpty(_qop);
 
             if (hasQop && _qop.Equals("auth-int", StringComparison.InvariantCultureIgnoreCase))
                 ha2Argument += ":" + MD5.GetHashHexValues(entityBodyBytes);
