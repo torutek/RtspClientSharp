@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using RtspClientSharp.Codecs;
 using RtspClientSharp.Codecs.Audio;
 using RtspClientSharp.Codecs.Video;
 using RtspClientSharp.MediaParsers;
@@ -82,7 +83,7 @@ namespace RtspClientSharp.Rtsp
             if (!string.IsNullOrEmpty(contentBaseHeader))
                 _requestMessageFactory.ContentBase = new Uri(contentBaseHeader);
 
-            var parser = new SdpParser();
+            var parser = new SdpParser(_connectionParameters.RawPayloadType);
             IEnumerable<RtspTrackInfo> tracks = parser.Parse(describeResponse.ResponseBody);
 
             bool anyTrackRequested = false;
@@ -336,6 +337,8 @@ namespace RtspClientSharp.Rtsp
                     yield return track;
                 else if (track.Codec is AudioCodecInfo &&
                          (_connectionParameters.RequiredTracks & RequiredTracks.Audio) != 0)
+                    yield return track;
+                else if (track.Codec is RawCodecInfo && _connectionParameters.RequiredTracks.HasFlag(RequiredTracks.Raw))
                     yield return track;
             }
         }

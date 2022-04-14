@@ -13,6 +13,13 @@ namespace RtspClientSharp.Sdp
 {
     class SdpParser
     {
+		private readonly int? _rawPayloadType;
+
+        public SdpParser(int? rawPayloadType)
+		{
+			_rawPayloadType = rawPayloadType;
+		}
+
         private class PayloadFormatInfo
         {
             public string TrackName { get; set; }
@@ -28,8 +35,7 @@ namespace RtspClientSharp.Sdp
 
         private readonly Dictionary<int, PayloadFormatInfo> _payloadFormatNumberToInfoMap =
             new Dictionary<int, PayloadFormatInfo>();
-
-        private PayloadFormatInfo _lastParsedFormatInfo;
+		private PayloadFormatInfo _lastParsedFormatInfo;
 
         public IEnumerable<RtspTrackInfo> Parse(ArraySegment<byte> payloadSegment)
         {
@@ -180,7 +186,7 @@ namespace RtspClientSharp.Sdp
                 payloadFormatInfo.SamplesFrequency = samplesFrequency; //override default
 
             string codecNameUpperCase = codecName.ToUpperInvariant();
-            payloadFormatInfo.CodecInfo = TryCreateCodecInfo(codecNameUpperCase, samplesFrequency, channels);
+            payloadFormatInfo.CodecInfo = TryCreateCodecInfo(codecNameUpperCase, samplesFrequency, channels) ?? payloadFormatInfo.CodecInfo;
         }
 
         private void ParseControlAttribute(string attributeValue)
@@ -301,7 +307,7 @@ namespace RtspClientSharp.Sdp
             return formatParameter.Substring(equalsSignIndex);
         }
 
-        private static CodecInfo TryCreateCodecInfo(int payloadFormatNumber)
+        private CodecInfo TryCreateCodecInfo(int payloadFormatNumber)
         {
             CodecInfo codecInfo = null;
 
@@ -329,6 +335,9 @@ namespace RtspClientSharp.Sdp
                     codecInfo = new H264CodecInfo();
                     break;
             }
+
+            if (payloadFormatNumber == _rawPayloadType)
+                codecInfo = new RawCodecInfo();
 
             return codecInfo;
         }

@@ -21,6 +21,11 @@ namespace RtspClientSharp
         /// </summary>
         public RequiredTracks RequiredTracks { get; set; } = RequiredTracks.All;
 
+        /// <summary>
+        /// If set, the payload type of the raw track to receive frames from
+        /// </summary>
+        public int? RawPayloadType { get; set; }
+
         public NetworkCredential Credentials { get; }
         public TimeSpan ConnectTimeout { get; set; } = TimeSpan.FromSeconds(30);
         public TimeSpan ReceiveTimeout { get; set; } = TimeSpan.FromSeconds(10);

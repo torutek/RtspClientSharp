@@ -2,14 +2,15 @@
 
 namespace RtspClientSharp.RawFrames
 {
-    public abstract class RawFrame
+    public class RawFrame
     {
         public DateTime Timestamp { get; }
         public ArraySegment<byte> FrameSegment { get; }
-        public abstract FrameType Type { get; }
+        public FrameType Type { get; }
 
-        protected RawFrame(DateTime timestamp, ArraySegment<byte> frameSegment)
+        public RawFrame(FrameType type, DateTime timestamp, ArraySegment<byte> frameSegment)
         {
+            Type = type;
             Timestamp = timestamp;
             FrameSegment = frameSegment;
         }
